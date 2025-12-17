@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:1337";
+const API_URL = "http://febal-cms-production.up.railway.app";
 
 export const fetchCategories = async () => {
   const res = await fetch(`${API_URL}/api/categorie?populate=*`);
