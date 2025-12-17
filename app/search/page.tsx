@@ -1,0 +1,201 @@
+"use client";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { X } from "lucide-react";
+
+interface Product {
+  id: number;
+  nome: string;
+  descrizione?: any[];
+  immagini?: { url: string }[];
+  categoria?: { id: number; nome: string };
+  collezione?: { id: number; nome: string };
+}
+
+export default function SearchPage() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q") || "";
+  
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch tutti i prodotti
+  useEffect(() => {
+    fetch("http://localhost:1337/api/prodotti?populate=*")
+      .then(res => res.json())
+      .then(data => {
+        if (data?.data) {
+          setProducts(data.data);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, []);
+
+  // Filtra i prodotti in base al query
+  useEffect(() => {
+    if (query.trim() && products.length > 0) {
+      const searchTerm = query.toLowerCase();
+      const filtered = products.filter(p =>
+        p.nome.toLowerCase().includes(searchTerm) ||
+        p.descrizione?.some(d =>
+          d.children?.some((c: any) =>
+            c.text.toLowerCase().includes(searchTerm)
+          )
+        )
+      );
+      setFilteredProducts(filtered);
+    } else {
+      setFilteredProducts([]);
+    }
+  }, [query, products]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-32 flex justify-center items-center">
+        <p className="text-gray-600 text-lg">Caricamento...</p>
+      </div>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-gray-50 pt-32">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Header */}
+        <div className="mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Risultati della ricerca
+          </h1>
+          <p className="text-xl text-gray-600">
+            {query ? `"${query}"` : "Nessun termine di ricerca"}
+          </p>
+          {query && filteredProducts.length > 0 && (
+            <p className="text-lg text-blue-600 font-semibold mt-4">
+              {filteredProducts.length} {filteredProducts.length === 1 ? "prodotto trovato" : "prodotti trovati"}
+            </p>
+          )}
+        </div>
+
+        {/* Risultati */}
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-24">
+            <p className="text-2xl text-gray-600 mb-4">
+              {query ? "Nessun prodotto trovato" : "Inserisci un termine di ricerca"}
+            </p>
+            <p className="text-gray-500">
+              Prova con parole chiave diverse
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pb-16">
+            {filteredProducts.map(prod => {
+              const imageUrl = prod.immagini?.[0]?.url
+                ? `http://localhost:1337${prod.immagini[0].url}`
+                : "/placeholder.png";
+
+              const descriptionText =
+                prod.descrizione?.map(d => d.children.map((c: any) => c.text).join(" ")).join(" ") || "";
+
+              return (
+                <div
+                  key={prod.id}
+                  onClick={() => setSelectedProduct(prod)}
+                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:scale-105 transition cursor-pointer"
+                >
+                  <img src={imageUrl} alt={prod.nome} className="w-full h-48 object-cover" />
+                  <div className="p-4">
+                    <h3 className="font-semibold text-lg text-center">{prod.nome}</h3>
+                    {descriptionText && (
+                      <p className="text-gray-600 text-sm mt-2 line-clamp-2">{descriptionText}</p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Modal Prodotto */}
+      {selectedProduct && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            onClick={() => setSelectedProduct(null)}
+          />
+
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative animate-in fade-in zoom-in duration-300">
+              
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="absolute top-6 right-6 bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition z-10"
+              >
+                <X size={24} className="text-gray-700" />
+              </button>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+                
+                <div className="flex flex-col justify-center">
+                  <img
+                    src={
+                      selectedProduct.immagini?.[0]?.url
+                        ? `http://localhost:1337${selectedProduct.immagini[0].url}`
+                        : "/placeholder.png"
+                    }
+                    alt={selectedProduct.nome}
+                    className="w-full h-96 object-cover rounded-xl shadow-lg"
+                  />
+                </div>
+
+                <div className="flex flex-col justify-start space-y-6">
+                  <div>
+                    <h2 className="text-4xl font-bold text-gray-900 mb-2">
+                      {selectedProduct.nome}
+                    </h2>
+                    {selectedProduct.collezione?.nome && (
+                      <p className="text-sm text-blue-600 font-semibold uppercase tracking-wide">
+                        {selectedProduct.collezione.nome}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="border-l-4 border-blue-500 pl-4">
+                    <p className="text-xs text-gray-500 uppercase tracking-widest">Categoria</p>
+                    <p className="text-lg font-semibold text-gray-800">
+                      {selectedProduct.categoria?.nome || "N/A"}
+                    </p>
+                  </div>
+
+                  {selectedProduct.descrizione && selectedProduct.descrizione.length > 0 && (
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Descrizione</p>
+                      <p className="text-gray-700 leading-relaxed text-base">
+                        {selectedProduct.descrizione
+                          ?.map(d => d.children.map((c: any) => c.text).join(" "))
+                          .join(" ")}
+                      </p>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => setSelectedProduct(null)}
+                    className="mt-6 px-8 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition"
+                  >
+                    Chiudi
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </main>
+  );
+}
