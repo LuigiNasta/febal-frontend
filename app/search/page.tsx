@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
 
@@ -12,7 +12,7 @@ interface Product {
   collezione?: { id: number; nome: string };
 }
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   
@@ -21,7 +21,6 @@ export default function SearchPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch tutti i prodotti
   useEffect(() => {
     fetch("http://localhost:1337/api/prodotti?populate=*")
       .then(res => res.json())
@@ -37,7 +36,6 @@ export default function SearchPage() {
       });
   }, []);
 
-  // Filtra i prodotti in base al query
   useEffect(() => {
     if (query.trim() && products.length > 0) {
       const searchTerm = query.toLowerCase();
@@ -66,7 +64,6 @@ export default function SearchPage() {
   return (
     <main className="min-h-screen bg-gray-50 pt-32">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Risultati della ricerca
@@ -81,7 +78,6 @@ export default function SearchPage() {
           )}
         </div>
 
-        {/* Risultati */}
         {filteredProducts.length === 0 ? (
           <div className="text-center py-24">
             <p className="text-2xl text-gray-600 mb-4">
@@ -121,7 +117,6 @@ export default function SearchPage() {
         )}
       </div>
 
-      {/* Modal Prodotto */}
       {selectedProduct && (
         <>
           <div
@@ -197,5 +192,13 @@ export default function SearchPage() {
         </>
       )}
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Caricamento...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }
