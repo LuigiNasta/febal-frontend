@@ -20,7 +20,7 @@ export default function Categories({ onSelectCategory }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:1337/api/categorie?populate=*")
+    fetch("http://febal-cms-production.up.railway.app/api/categorie?populate=*")
       .then(res => res.json())
       .then(data => {
         const cats = data.data.map((cat: any) => ({
@@ -38,7 +38,7 @@ export default function Categories({ onSelectCategory }: Props) {
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {categories.map(cat => {
           const imageUrl = cat.immagine?.url
-            ? `http://localhost:1337${cat.immagine.url}`
+            ? `febal-cms-production.up.railway.app${cat.immagine.url}`
             : "/placeholder.png";
 
           return (

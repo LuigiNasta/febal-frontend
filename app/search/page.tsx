@@ -22,7 +22,7 @@ function SearchContent() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:1337/api/prodotti?populate=*")
+    fetch("http://febal-cms-production.up.railway.app/api/prodotti?populate=*")
       .then(res => res.json())
       .then(data => {
         if (data?.data) {
@@ -91,7 +91,7 @@ function SearchContent() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pb-16">
             {filteredProducts.map(prod => {
               const imageUrl = prod.immagini?.[0]?.url
-                ? `http://localhost:1337${prod.immagini[0].url}`
+                ? `http://febal-cms-production.up.railway.app${prod.immagini[0].url}`
                 : "/placeholder.png";
 
               const descriptionText =
@@ -140,7 +140,7 @@ function SearchContent() {
                   <img
                     src={
                       selectedProduct.immagini?.[0]?.url
-                        ? `http://localhost:1337${selectedProduct.immagini[0].url}`
+                        ? `http://febal-cms-production.up.railway.app${selectedProduct.immagini[0].url}`
                         : "/placeholder.png"
                     }
                     alt={selectedProduct.nome}

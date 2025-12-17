@@ -8,7 +8,7 @@ export default function Collections() {
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
 
   useEffect(() => {
-    fetch("http://localhost:1337/api/collezioni?populate=*")
+    fetch("http://febal-cms-production.up.railway.app/api/collezioni?populate=*")
       .then(res => res.json())
       .then(data => {
         if (data?.data) {
@@ -56,7 +56,7 @@ export default function Collections() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {collections.map(c => {
               const imageUrl = c.immagine_hero
-                ? `http://localhost:1337${c.immagine_hero.url}`
+                ? `http://febal-cms-production.up.railway.app${c.immagine_hero.url}`
                 : "/placeholder.png";
 
               const description = c.descrizione?.[0]?.children?.[0]?.text || "";
@@ -147,7 +147,7 @@ export default function Collections() {
                   <img
                     src={
                       selectedCollection.immagine_hero
-                        ? `http://localhost:1337${selectedCollection.immagine_hero.url}`
+                        ? `http://febal-cms-production.up.railway.app${selectedCollection.immagine_hero.url}`
                         : "/placeholder.png"
                     }
                     alt={selectedCollection.nome}

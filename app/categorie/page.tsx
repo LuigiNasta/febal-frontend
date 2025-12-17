@@ -18,7 +18,7 @@ function CategorieContent() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    fetch("http://localhost:1337/api/categorie?populate=*")
+    fetch("http://febal-cms-production.up.railway.app/api/categorie?populate=*")
       .then(res => res.json())
       .then(data => {
         if (data?.data) {

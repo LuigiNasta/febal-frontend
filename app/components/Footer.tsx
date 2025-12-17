@@ -81,7 +81,7 @@ export default function Footer() {
         {/* Logo Febal */}
         <div className="flex flex-col items-center md:items-start">
           <Image
-            src="/febal-logo.png"
+            src="/febal-logo.PNG"
             alt="Febal Casa"
             width={150}
             height={50}
