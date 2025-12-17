@@ -18,7 +18,7 @@ export default function CategoriePage() {
 
   // Fetch tutte le categorie al mount
   useEffect(() => {
-    fetch("http://febal-cms-production.up.railway.app/api/categorie?populate=*")
+    fetch("https://febal-cms-production.up.railway.app/api/categorie?populate=*")
       .then(res => res.json())
       .then(data => {
         if (data?.data) {

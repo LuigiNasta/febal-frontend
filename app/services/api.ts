@@ -1,4 +1,4 @@
-const API_URL = "http://febal-cms-production.up.railway.app";
+const API_URL = "https://febal-cms-production.up.railway.app";
 
 export const fetchCategories = async () => {
   const res = await fetch(`${API_URL}/api/categorie?populate=*`);

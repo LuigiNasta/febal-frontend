@@ -20,7 +20,7 @@ export default function Categories({ onSelectCategory }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    fetch("http://febal-cms-production.up.railway.app/api/categorie?populate=*")
+    fetch("https://febal-cms-production.up.railway.app/api/categorie?populate=*")
       .then(res => res.json())
       .then(data => {
         const cats = data.data.map((cat: any) => ({
