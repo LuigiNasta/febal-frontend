@@ -38,7 +38,7 @@ export default function Products({ categoryId }: ProductsProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
-    fetch("https://febal-cms-production.up.railway.app/api/prodotti?populate=*")
+    fetch("https://febal-cms-strapi-production.up.railway.app/api/prodotti?populate=*")
       .then(res => res.json())
       .then(data => {
         if (!data?.data) {
@@ -83,7 +83,7 @@ export default function Products({ categoryId }: ProductsProps) {
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map((prod: Product) => {
             const imageUrl = prod.immagini?.[0]?.url
-              ? `https://febal-cms-production.up.railway.app${prod.immagini[0].url}`
+              ? `https://febal-cms-strapi-production.up.railway.app${prod.immagini[0].url}`
               : "/placeholder.png";
 
             // Tipizzazione esplicita per d e c

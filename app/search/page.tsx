@@ -22,7 +22,7 @@ function SearchContent() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("https://febal-cms-production.up.railway.app/api/prodotti?populate=*")
+    fetch("https://febal-cms-strapi-production.up.railway.app/api/prodotti?populate=*")
       .then(res => res.json())
       .then(data => {
         if (data?.data) {
