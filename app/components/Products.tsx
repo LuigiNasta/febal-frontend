@@ -41,8 +41,12 @@ export default function Products({ categoryId }: ProductsProps) {
 
   useEffect(() => {
     setLoading(true);
-    
-    fetch("https://febal-cms-strapi-production.up.railway.app/api/prodotti?populate=*")
+    const token = "73dd9abb005138fe096666c0bdfbadd9d7e7ff5289ce256c2f383cad69cff05b0947a133231ea37433cc7f5360b4edba226aed8bf1e3f956f0824d67e82af05898d421a08289b014a13d0d80facf2ae279f4c72e977c8968b95a2eaedaec39db028ad8e942cda7214e50e3b874d0852a021df0ec7d6eb2072486ee12a88547cf";
+    fetch("https://febal-cms-strapi-production.up.railway.app/api/prodotti?populate=*", {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(res => res.json())
       .then(data => {
         if (!data?.data) {
