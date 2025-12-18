@@ -91,7 +91,7 @@ function SearchContent() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pb-16">
             {filteredProducts.map(prod => {
               const imageUrl = prod.immagini?.[0]?.url
-                ? `https://febal-cms-production.up.railway.app${prod.immagini[0].url}`
+                ? `https://febal-cms-strapi-production.up.railway.app${prod.immagini[0].url}`
                 : "/placeholder.png";
 
               const descriptionText =
@@ -140,7 +140,7 @@ function SearchContent() {
                   <img
                     src={
                       selectedProduct.immagini?.[0]?.url
-                        ? `https://febal-cms-production.up.railway.app${selectedProduct.immagini[0].url}`
+                        ? `https://febal-cms-strapi-production.up.railway.app${selectedProduct.immagini[0].url}`
                         : "/placeholder.png"
                     }
                     alt={selectedProduct.nome}

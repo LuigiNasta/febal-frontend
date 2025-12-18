@@ -136,7 +136,7 @@ export default function Products({ categoryId }: ProductsProps) {
                 <img
                   src={
                     selectedProduct.immagini?.[0]?.url
-                      ? `febal-cms-production.up.railway.app${selectedProduct.immagini[0].url}`
+                      ? `febal-cms-strapi-production.up.railway.app${selectedProduct.immagini[0].url}`
                       : "/placeholder.png"
                   }
                   alt={selectedProduct.nome}
