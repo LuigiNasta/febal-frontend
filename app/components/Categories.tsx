@@ -43,7 +43,7 @@ export default function Categories({ onSelectCategory }: Props) {
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {categories.map(cat => {
           const imageUrl = cat.immagine?.url
-            ? `febal-cms-strapi-production.up.railway.app${cat.immagine.url}`
+            ? `https://febal-cms-strapi-production.up.railway.app${cat.immagine.url}`
             : "/placeholder.png";
 
           return (
