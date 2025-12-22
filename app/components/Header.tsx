@@ -15,6 +15,7 @@ export default function Header() {
     { name: "Categorie", href: "/categorie" },
     { name: "Collezioni", href: "/collezioni" },
     { name: "Prodotti", href: "/prodotti" },
+    { name: "Offerte", href: "/offerte" },
     { name: "Contatti", href: "/contatti" },
   ];
 
@@ -68,7 +69,9 @@ export default function Header() {
             <Link
               key={item.name}
               href={item.href}
-              className="relative text-white after:block after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-red-600 after:transition-all after:duration-300 hover:after:w-full"
+              className={`relative text-white after:block after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:transition-all after:duration-300 hover:after:w-full ${
+                item.name === "Offerte" ? "after:bg-yellow-500 font-semibold" : "after:bg-red-600"
+              }`}
             >
               {item.name}
             </Link>
@@ -139,7 +142,11 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-white hover:text-red-600 hover:underline transition"
+                className={`transition ${
+                  item.name === "Offerte"
+                    ? "text-yellow-400 hover:text-yellow-300 font-semibold"
+                    : "text-white hover:text-red-600 hover:underline"
+                }`}
                 onClick={() => setOpen(false)}
               >
                 {item.name}

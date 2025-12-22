@@ -28,13 +28,15 @@ interface Product {
   immagini?: Image[];
   categoria: Categoria | null;
   collezione?: Collezione | null;
+  in_evidenza?: boolean;
 }
 
 interface ProductsProps {
   categoryId: number | null;
+  isOfferte?: boolean;
 }
 
-export default function Products({ categoryId }: ProductsProps) {
+export default function Products({ categoryId, isOfferte = false }: ProductsProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,9 +64,15 @@ export default function Products({ categoryId }: ProductsProps) {
           immagini: p.immagini || [],
           categoria: p.categoria || null,
           collezione: p.collezione || null,
+          in_evidenza: p.in_evidenza || false,
         }));
 
-        if (categoryId !== null) {
+        // Filtro per offerte (prodotti NON in evidenza)
+        if (isOfferte) {
+          prods = prods.filter(prod => prod.in_evidenza === false);
+        }
+        // Filtro per categoria
+        else if (categoryId !== null) {
           prods = prods.filter(prod => prod.categoria?.id === categoryId);
         }
 
@@ -75,7 +83,7 @@ export default function Products({ categoryId }: ProductsProps) {
         console.error("❌ Errore fetch prodotti:", err);
         setLoading(false);
       });
-  }, [categoryId]);
+  }, [categoryId, isOfferte]);
 
   if (loading) {
     return (
@@ -88,7 +96,7 @@ export default function Products({ categoryId }: ProductsProps) {
   if (products.length === 0) {
     return (
       <p className="text-center py-16 text-gray-600">
-        {categoryId !== null ? "Nessun prodotto in questa categoria." : "Nessun prodotto disponibile."}
+        {isOfferte ? "Nessuna offerta disponibile al momento." : categoryId !== null ? "Nessun prodotto in questa categoria." : "Nessun prodotto disponibile."}
       </p>
     );
   }
@@ -109,8 +117,15 @@ export default function Products({ categoryId }: ProductsProps) {
               <div
                 key={prod.id}
                 onClick={() => setSelectedProduct(prod)}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:scale-105 transition cursor-pointer"
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:scale-105 transition cursor-pointer relative"
               >
+                {/* Badge Offerta */}
+                {isOfferte && !prod.in_evidenza && (
+                  <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold z-10">
+                    OFFERTA
+                  </div>
+                )}
+                
                 <img src={imageUrl} alt={prod.nome} className="w-full h-48 object-cover" />
                 <div className="p-4">
                   <h3 className="font-semibold text-lg text-center">{prod.nome}</h3>
