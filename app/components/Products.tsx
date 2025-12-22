@@ -16,9 +16,16 @@ interface Collezione {
   nome?: string;
 }
 
+interface TextChild {
+  text: string;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+}
+
 interface RichTextNode {
   type: string;
-  children: { text: string }[];
+  children: TextChild[];
 }
 
 interface Product {
@@ -40,6 +47,73 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(null);
+
+  // Funzione per rendere il testo con formattazione
+  const renderDescription = (nodes: RichTextNode[]) => {
+    return nodes.map((node, idx) => {
+      if (node.type === 'paragraph') {
+        return (
+          <p key={idx} className="mb-3">
+            {node.children.map((child, i) => {
+              let element: any = child.text;
+              if (child.bold) element = <strong key={i}>{element}</strong>;
+              if (child.italic) element = <em key={i}>{element}</em>;
+              if (child.underline) element = <u key={i}>{element}</u>;
+              return element;
+            })}
+          </p>
+        );
+      }
+      if (node.type === 'heading-1') {
+        return (
+          <h3 key={idx} className="text-2xl font-bold mb-3 text-gray-900">
+            {node.children.map((c, i) => (
+              <span key={i}>{c.text}</span>
+            ))}
+          </h3>
+        );
+      }
+      if (node.type === 'heading-2') {
+        return (
+          <h4 key={idx} className="text-xl font-bold mb-2 text-gray-800">
+            {node.children.map((c, i) => (
+              <span key={i}>{c.text}</span>
+            ))}
+          </h4>
+        );
+      }
+      if (node.type === 'heading-3') {
+        return (
+          <h5 key={idx} className="text-lg font-bold mb-2 text-gray-800">
+            {node.children.map((c, i) => (
+              <span key={i}>{c.text}</span>
+            ))}
+          </h5>
+        );
+      }
+      if (node.type === 'list') {
+        return (
+          <ul key={idx} className="list-disc list-inside mb-3 space-y-1">
+            {node.children.map((item, i) => (
+              <li key={i} className="text-gray-700">
+                {item.text}
+              </li>
+            ))}
+          </ul>
+        );
+      }
+      return null;
+    });
+  };
+
+  // Funzione per estrarre testo semplice (per anteprima)
+  const getPlainText = (nodes: RichTextNode[]) => {
+    return nodes
+      .map(node => node.children.map(c => c.text).join(" "))
+      .join(" ")
+      .substring(0, 100);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -110,8 +184,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
               ? `https://febal-cms-strapi-production.up.railway.app${prod.immagini[0].url}`
               : "/placeholder.png";
 
-            const descriptionText =
-              prod.descrizione?.map(d => d.children.map(c => c.text).join(" ")).join(" ") || "";
+            const descriptionText = prod.descrizione ? getPlainText(prod.descrizione) : "";
 
             return (
               <div
@@ -120,7 +193,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:scale-105 transition cursor-pointer relative"
               >
                 {/* Badge Offerta */}
-                {isOfferte && !prod.in_evidenza && (
+                {!prod.in_evidenza && (
                   <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold z-10">
                     OFFERTA
                   </div>
@@ -130,7 +203,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
                 <div className="p-4">
                   <h3 className="font-semibold text-lg text-center">{prod.nome}</h3>
                   {descriptionText && (
-                    <p className="text-gray-600 text-sm mt-2 line-clamp-2">{descriptionText}</p>
+                    <p className="text-gray-600 text-sm mt-2 line-clamp-2">{descriptionText}...</p>
                   )}
                 </div>
               </div>
@@ -171,8 +244,26 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
                         : "/placeholder.png"
                     }
                     alt={selectedProduct.nome}
-                    className="w-full h-96 object-cover rounded-xl shadow-lg"
+                    className="w-full h-96 object-cover rounded-xl shadow-lg cursor-pointer hover:opacity-80 transition"
+                    onClick={() => setExpandedImageIndex(0)}
                   />
+                  
+                  {/* Miniature altre immagini */}
+                  {selectedProduct.immagini && selectedProduct.immagini.length > 1 && (
+                    <div className="flex gap-2 mt-4">
+                      {selectedProduct.immagini.map((img, idx) => (
+                        <img
+                          key={idx}
+                          src={`https://febal-cms-strapi-production.up.railway.app${img.url}`}
+                          alt={`${selectedProduct.nome} ${idx + 1}`}
+                          className={`w-16 h-16 object-cover rounded cursor-pointer transition ${
+                            idx === 0 ? 'border-2 border-blue-500' : 'border border-gray-300 hover:border-blue-500'
+                          }`}
+                          onClick={() => setExpandedImageIndex(idx)}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Dettagli - Destra */}
@@ -196,15 +287,13 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
                     </p>
                   </div>
 
-                  {/* Descrizione */}
+                  {/* Descrizione con formattazione */}
                   {selectedProduct.descrizione && selectedProduct.descrizione.length > 0 && (
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Descrizione</p>
-                      <p className="text-gray-700 leading-relaxed text-base">
-                        {selectedProduct.descrizione
-                          ?.map(d => d.children.map(c => c.text).join(" "))
-                          .join(" ")}
-                      </p>
+                      <p className="text-xs text-gray-500 uppercase tracking-widest mb-3">Descrizione</p>
+                      <div className="text-gray-700 leading-relaxed text-base">
+                        {renderDescription(selectedProduct.descrizione)}
+                      </div>
                     </div>
                   )}
 
@@ -227,6 +316,66 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
                   </button>
                 </div>
 
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Modal immagine ingrandita */}
+      {expandedImageIndex !== null && selectedProduct?.immagini && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+            onClick={() => setExpandedImageIndex(null)}
+          />
+          
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
+            {/* Bottone chiudi */}
+            <button
+              onClick={() => setExpandedImageIndex(null)}
+              className="absolute top-6 right-6 bg-white hover:bg-gray-200 rounded-full p-3 transition z-60"
+            >
+              <X size={28} className="text-gray-900" />
+            </button>
+
+            {/* Contenitore immagine */}
+            <div className="relative max-w-4xl max-h-[90vh] flex items-center justify-center">
+              <img
+                src={`https://febal-cms-strapi-production.up.railway.app${selectedProduct.immagini[expandedImageIndex].url}`}
+                alt={selectedProduct.nome}
+                className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              />
+
+              {/* Freccia sinistra */}
+              {expandedImageIndex > 0 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpandedImageIndex(expandedImageIndex - 1);
+                  }}
+                  className="absolute left-4 bg-white hover:bg-gray-200 rounded-full p-3 transition"
+                >
+                  <span className="text-2xl">←</span>
+                </button>
+              )}
+
+              {/* Freccia destra */}
+              {expandedImageIndex < selectedProduct.immagini.length - 1 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpandedImageIndex(expandedImageIndex + 1);
+                  }}
+                  className="absolute right-4 bg-white hover:bg-gray-200 rounded-full p-3 transition"
+                >
+                  <span className="text-2xl">→</span>
+                </button>
+              )}
+
+              {/* Contatore immagini */}
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
+                {expandedImageIndex + 1} / {selectedProduct.immagini.length}
               </div>
             </div>
           </div>
