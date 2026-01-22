@@ -38,9 +38,7 @@ export default function Categories({ onSelectCategory }: Props) {
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {categories.map(cat => {
-          const imageUrl = cat.immagine?.url
-            ? `${process.env.NEXT_PUBLIC_API_URL}${cat.immagine.url}`
-            : "/placeholder.png";
+          const imageUrl = cat.immagine?.url || "/placeholder.png";
 
           return (
             <div
