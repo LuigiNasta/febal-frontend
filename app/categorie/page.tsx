@@ -18,7 +18,8 @@ function CategorieContent() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    fetch("https://febal-cms-strapi-production.up.railway.app/api/categorie?populate=*")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/categorie?populate=*`, {
+    })
       .then(res => res.json())
       .then(data => {
         if (data?.data) {

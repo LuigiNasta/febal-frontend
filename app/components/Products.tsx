@@ -117,11 +117,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
 
   useEffect(() => {
     setLoading(true);
-    const token = "73dd9abb005138fe096666c0bdfbadd9d7e7ff5289ce256c2f383cad69cff05b0947a133231ea37433cc7f5360b4edba226aed8bf1e3f956f0824d67e82af05898d421a08289b014a13d0d80facf2ae279f4c72e977c8968b95a2eaedaec39db028ad8e942cda7214e50e3b874d0852a021df0ec7d6eb2072486ee12a88547cf";
-    fetch("https://febal-cms-strapi-production.up.railway.app/api/prodotti?populate=*", {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/prodotti?populate=*`, {
     })
       .then(res => res.json())
       .then(data => {
@@ -181,7 +177,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map(prod => {
             const imageUrl = prod.immagini?.[0]?.url
-              ? `https://febal-cms-strapi-production.up.railway.app${prod.immagini[0].url}`
+              ? `${process.env.NEXT_PUBLIC_API_URL}${prod.immagini[0].url}`
               : "/placeholder.png";
 
             const descriptionText = prod.descrizione ? getPlainText(prod.descrizione) : "";
@@ -240,7 +236,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
                   <img
                     src={
                       selectedProduct.immagini?.[0]?.url
-                        ? `https://febal-cms-strapi-production.up.railway.app${selectedProduct.immagini[0].url}`
+                        ? `${process.env.NEXT_PUBLIC_API_URL}${selectedProduct.immagini[0].url}`
                         : "/placeholder.png"
                     }
                     alt={selectedProduct.nome}
@@ -254,7 +250,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
                       {selectedProduct.immagini.map((img, idx) => (
                         <img
                           key={idx}
-                          src={`https://febal-cms-strapi-production.up.railway.app${img.url}`}
+                          src={`${process.env.NEXT_PUBLIC_API_URL}${img.url}`}
                           alt={`${selectedProduct.nome} ${idx + 1}`}
                           className={`w-16 h-16 object-cover rounded cursor-pointer transition ${
                             idx === 0 ? 'border-2 border-blue-500' : 'border border-gray-300 hover:border-blue-500'
@@ -342,7 +338,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
             {/* Contenitore immagine */}
             <div className="relative max-w-4xl max-h-[90vh] flex items-center justify-center">
               <img
-                src={`https://febal-cms-strapi-production.up.railway.app${selectedProduct.immagini[expandedImageIndex].url}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL}${selectedProduct.immagini[expandedImageIndex].url}`}
                 alt={selectedProduct.nome}
                 className="max-w-full max-h-[90vh] object-contain rounded-lg"
               />
