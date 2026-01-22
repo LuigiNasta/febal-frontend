@@ -171,9 +171,7 @@ function SearchContent() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pb-16">
             {filteredProducts.map(prod => {
-              const imageUrl = prod.immagini?.[0]?.url
-                ? `${process.env.NEXT_PUBLIC_API_URL}${prod.immagini[0].url}`
-                : "/placeholder.png";
+              const imageUrl = prod.immagini?.[0]?.url ||"/placeholder.png";
 
               const descriptionText = prod.descrizione ? getPlainText(prod.descrizione) : "";
 
@@ -227,9 +225,7 @@ function SearchContent() {
                 <div className="flex flex-col justify-center">
                   <img
                     src={
-                      selectedProduct.immagini?.[0]?.url
-                        ? `${process.env.NEXT_PUBLIC_API_URL}${selectedProduct.immagini[0].url}`
-                        : "/placeholder.png"
+                      selectedProduct.immagini?.[0]?.url ||"/placeholder.png"
                     }
                     alt={selectedProduct.nome}
                     className="w-full h-96 object-cover rounded-xl shadow-lg cursor-pointer hover:opacity-80 transition"
@@ -314,7 +310,7 @@ function SearchContent() {
 
             <div className="relative max-w-4xl max-h-[90vh] flex items-center justify-center">
               <img
-                src={`${process.env.NEXT_PUBLIC_API_URL}${selectedProduct.immagini[expandedImageIndex].url}`}
+                src={`${selectedProduct.immagini[expandedImageIndex].url}`}
                 alt={selectedProduct.nome}
                 className="max-w-full max-h-[90vh] object-contain rounded-lg"
               />

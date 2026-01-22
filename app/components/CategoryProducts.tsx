@@ -83,9 +83,7 @@ export default function Products({ categoryId }: ProductsProps) {
       <section id="prodotti" className="py-16 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map((prod: Product) => {
-            const imageUrl = prod.immagini?.[0]?.url
-              ? `${process.env.NEXT_PUBLIC_API_URL}${prod.immagini[0].url}`
-              : "/placeholder.png";
+            const imageUrl = prod.immagini?.[0]?.url || "/placeholder.png";
 
             // Tipizzazione esplicita per d e c
             const descriptionText =
@@ -136,9 +134,7 @@ export default function Products({ categoryId }: ProductsProps) {
               <div>
                 <img
                   src={
-                    selectedProduct.immagini?.[0]?.url
-                      ? `${process.env.NEXT_PUBLIC_API_URL}${selectedProduct.immagini[0].url}`
-                      : "/placeholder.png"
+                    selectedProduct.immagini?.[0]?.url || "/placeholder.png"
                   }
                   alt={selectedProduct.nome}
                   className="w-full rounded-lg"

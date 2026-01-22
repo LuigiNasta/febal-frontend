@@ -176,9 +176,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
       <section id="prodotti" className="py-16 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map(prod => {
-            const imageUrl = prod.immagini?.[0]?.url
-              ? `${process.env.NEXT_PUBLIC_API_URL}${prod.immagini[0].url}`
-              : "/placeholder.png";
+            const imageUrl = prod.immagini?.[0]?.url ||"/placeholder.png";
 
             const descriptionText = prod.descrizione ? getPlainText(prod.descrizione) : "";
 
@@ -235,9 +233,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
                 <div className="flex flex-col justify-center">
                   <img
                     src={
-                      selectedProduct.immagini?.[0]?.url
-                        ? `${process.env.NEXT_PUBLIC_API_URL}${selectedProduct.immagini[0].url}`
-                        : "/placeholder.png"
+                      selectedProduct.immagini?.[0]?.url || "/placeholder.png"
                     }
                     alt={selectedProduct.nome}
                     className="w-full h-96 object-cover rounded-xl shadow-lg cursor-pointer hover:opacity-80 transition"
@@ -250,7 +246,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
                       {selectedProduct.immagini.map((img, idx) => (
                         <img
                           key={idx}
-                          src={`${process.env.NEXT_PUBLIC_API_URL}${img.url}`}
+                          src={img.url}
                           alt={`${selectedProduct.nome} ${idx + 1}`}
                           className={`w-16 h-16 object-cover rounded cursor-pointer transition ${
                             idx === 0 ? 'border-2 border-blue-500' : 'border border-gray-300 hover:border-blue-500'
@@ -338,7 +334,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
             {/* Contenitore immagine */}
             <div className="relative max-w-4xl max-h-[90vh] flex items-center justify-center">
               <img
-                src={`${process.env.NEXT_PUBLIC_API_URL}${selectedProduct.immagini[expandedImageIndex].url}`}
+                src={`${selectedProduct.immagini[expandedImageIndex].url}`}
                 alt={selectedProduct.nome}
                 className="max-w-full max-h-[90vh] object-contain rounded-lg"
               />
