@@ -7,9 +7,6 @@ import Hero from "./components/Hero";
 export default function Home() {
   return (
     <>
-    <head> 
-      <meta name="google-site-verification" content="Khef-5-VkzmO4BMvbSOejIU9z9LHwskan8lFB2tflAw" />
-     </head>
       <Header />
       <section className="relative w-full h-screen">
         <Hero />
