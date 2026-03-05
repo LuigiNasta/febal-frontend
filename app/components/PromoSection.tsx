@@ -1,4 +1,5 @@
 // components/PromoSection.tsx
+"use client";
 import Link from "next/link";
 
 const promoCards = [
