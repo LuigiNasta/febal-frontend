@@ -9,25 +9,82 @@ const slides = [
     badge: null,
     title: "Benvenuti da F.lli Gaeta",
     subtitle: "Scopri le nostre Collezioni di arredamento uniche e di qualità",
-    cta: { label: "Esplora le Collezioni", href: "/collezioni" },
+    cta: { label: "Esplora le Collezioni", href: "/collezioni", scroll: false },
     accent: false,
+    promoLabel: null,
   },
   {
     image: "/hero2.jpg",
-    badge: "🌸 Promozione Primavera 2026",
-    title: "Il momento giusto per progettare i tuoi spazi è ora",
+    badge: null,
+    title: null,
     subtitle: null,
-    promo: [
-      "Fino a 2.000€ di SCONTO su soggiorno e camera da letto",
-      "Elettrodomestici e tavolo in ceramica a metà prezzo",
-      "Top in gres in REGALO!",
-    ],
-    cta: { label: "Scopri l'Offerta", href: "/promozioni" },
-    accent: true,
+    promo: null,
+    cta: { label: "Scopri l'Offerta", href: "#promo-primavera", scroll: true },
+    accent: false,
+    promoLabel: "Promozione Primavera 2026",
   },
 ];
 
-const AUTOPLAY_DELAY = 5000;
+function CtaButton({
+  cta,
+  style,
+}: {
+  cta: { label: string; href: string; scroll: boolean };
+  style?: React.CSSProperties;
+}) {
+  const baseStyle: React.CSSProperties = {
+    background: "#dc2626",
+    color: "#fff",
+    fontSize: "1rem",
+    letterSpacing: "0.05em",
+    boxShadow: "0 4px 24px rgba(0,0,0,0.25)",
+    textTransform: "uppercase",
+    display: "inline-block",
+    fontWeight: 600,
+    padding: "14px 32px",
+    borderRadius: "2px",
+    transition: "all 0.3s ease",
+    cursor: "pointer",
+    border: "none",
+    ...style,
+  };
+
+  const handleHover = (e: React.MouseEvent<HTMLElement>, enter: boolean) => {
+    (e.currentTarget as HTMLElement).style.transform = enter ? "translateY(-2px)" : "translateY(0)";
+    (e.currentTarget as HTMLElement).style.boxShadow = enter
+      ? "0 8px 32px rgba(0,0,0,0.35)"
+      : "0 4px 24px rgba(0,0,0,0.25)";
+    (e.currentTarget as HTMLElement).style.background = enter ? "#b91c1c" : "#dc2626";
+  };
+
+  if (cta.scroll) {
+    return (
+      <button
+        style={baseStyle}
+        onMouseEnter={(e) => handleHover(e, true)}
+        onMouseLeave={(e) => handleHover(e, false)}
+        onClick={() => {
+          document.getElementById("promo-primavera")?.scrollIntoView({ behavior: "smooth" });
+        }}
+      >
+        {cta.label}
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={cta.href}
+      style={baseStyle}
+      onMouseEnter={(e) => handleHover(e, true)}
+      onMouseLeave={(e) => handleHover(e, false)}
+    >
+      {cta.label}
+    </Link>
+  );
+}
+
+const AUTOPLAY_DELAY = 10000;
 
 export default function Hero() {
   const [current, setCurrent] = useState(0);
@@ -82,7 +139,7 @@ export default function Hero() {
 
       {/* Content */}
       <div
-        className="absolute inset-0 flex items-center justify-center z-10 px-4"
+        className="absolute inset-0 z-10"
         style={{
           opacity: animating ? 0 : 1,
           transform: animating
@@ -91,94 +148,72 @@ export default function Hero() {
           transition: "opacity 0.5s ease, transform 0.5s ease",
         }}
       >
-        <div className="text-center max-w-3xl mx-auto">
-          {slide.badge && (
-            <span
-              className="inline-block mb-4 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide"
-              style={{
-                background: "rgba(255,255,255,0.15)",
-                backdropFilter: "blur(8px)",
-                border: "1px solid rgba(255,255,255,0.3)",
-                color: "#fff",
-                letterSpacing: "0.08em",
-              }}
-            >
-              {slide.badge}
-            </span>
-          )}
-
-          <h1
-            className="text-white font-bold mb-4 leading-tight"
-            style={{
-              fontSize: "clamp(2rem, 5vw, 3.5rem)",
-              textShadow: "0 2px 20px rgba(0,0,0,0.4)",
-              fontFamily: "'Georgia', serif",
-            }}
-          >
-            {slide.title}
-          </h1>
-
-          {slide.subtitle && (
-            <p
-              className="text-white/90 mb-8"
-              style={{
-                fontSize: "clamp(1rem, 2vw, 1.25rem)",
-                textShadow: "0 1px 8px rgba(0,0,0,0.3)",
-              }}
-            >
-              {slide.subtitle}
-            </p>
-          )}
-
-          {slide.promo && (
-            <ul className="mb-8 space-y-2">
-              {slide.promo.map((item, i) => (
-                <li
-                  key={i}
-                  className="text-white font-medium"
+        {/* Slide 1 — centered layout */}
+        {!slide.promoLabel && (
+          <div className="absolute inset-0 flex items-center justify-center px-4">
+            <div className="text-center max-w-3xl mx-auto">
+              <h1
+                className="text-white font-bold mb-4 leading-tight"
+                style={{
+                  fontSize: "clamp(2rem, 5vw, 3.5rem)",
+                  textShadow: "0 2px 20px rgba(0,0,0,0.4)",
+                  fontFamily: "'Georgia', serif",
+                }}
+              >
+                {slide.title}
+              </h1>
+              {slide.subtitle && (
+                <p
+                  className="text-white/90 mb-8"
                   style={{
-                    fontSize: "clamp(0.9rem, 1.8vw, 1.1rem)",
-                    textShadow: "0 1px 6px rgba(0,0,0,0.4)",
+                    fontSize: "clamp(1rem, 2vw, 1.25rem)",
+                    textShadow: "0 1px 8px rgba(0,0,0,0.3)",
                   }}
                 >
-                  <span
-                    className="inline-block w-2 h-2 rounded-full mr-2 align-middle"
-                    style={{ background: "#e8c96a", marginBottom: "2px" }}
-                  />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          )}
+                  {slide.subtitle}
+                </p>
+              )}
+              <CtaButton cta={slide.cta} />
+            </div>
+          </div>
+        )}
 
-          <Link
-            href={slide.cta.href}
-            className="inline-block font-semibold px-8 py-3.5 rounded-sm transition-all duration-300"
-            style={{
-              background: slide.accent
-                ? "linear-gradient(135deg, #c8972a, #e8c96a)"
-                : "#dc2626",
-              color: slide.accent ? "#1a1008" : "#fff",
-              fontSize: "1rem",
-              letterSpacing: "0.05em",
-              boxShadow: "0 4px 24px rgba(0,0,0,0.25)",
-              textTransform: "uppercase",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.transform =
-                "translateY(-2px)";
-              (e.currentTarget as HTMLElement).style.boxShadow =
-                "0 8px 32px rgba(0,0,0,0.35)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-              (e.currentTarget as HTMLElement).style.boxShadow =
-                "0 4px 24px rgba(0,0,0,0.25)";
-            }}
-          >
-            {slide.cta.label}
-          </Link>
-        </div>
+        {/* Slide 2 — bottom-left promo label + red button */}
+        {slide.promoLabel && (
+          <div className="absolute bottom-20 left-8 md:left-16 flex flex-col items-start gap-4">
+            <div style={{
+              borderLeft: "3px solid #dc2626",
+              paddingLeft: "14px",
+            }}>
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.75)",
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  marginBottom: "4px",
+                }}
+              >
+                F.lli Gaeta
+              </p>
+              <p
+                style={{
+                  color: "#fff",
+                  fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)",
+                  fontWeight: 700,
+                  fontFamily: "'Georgia', serif",
+                  letterSpacing: "0.02em",
+                  textShadow: "0 2px 12px rgba(0,0,0,0.5)",
+                  lineHeight: 1.2,
+                }}
+              >
+                {slide.promoLabel}
+              </p>
+            </div>
+            <CtaButton cta={slide.cta} style={{ fontSize: "0.9rem", padding: "12px 28px" }} />
+          </div>
+        )}
       </div>
 
       {/* Navigation arrows */}
