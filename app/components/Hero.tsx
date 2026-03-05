@@ -126,7 +126,7 @@ export default function Hero() {
       {/* Background image */}
       <div
         className="absolute inset-0 transition-opacity duration-500"
-        style={{ opacity: animating ? 0 : 1, background: slide.promoLabel ? "#1a1a1a" : "transparent" }}
+        style={{ opacity: animating ? 0 : 1 }}
       >
         <img
           src={slide.image}
@@ -134,14 +134,18 @@ export default function Hero() {
           style={{
             width: "100%",
             height: "100%",
-            objectFit: slide.promoLabel ? "contain" : "cover",
-            objectPosition: "center center",
+            objectFit: "cover",
+            objectPosition: slide.promoLabel ? "50% 20%" : "center center",
             display: "block",
           }}
         />
         {/* Gradient overlay — solo slide 1 */}
         {!slide.promoLabel && (
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
+        )}
+        {/* Slide 2: gradient leggero solo in basso per il bottone */}
+        {slide.promoLabel && (
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7) 100%)" }} />
         )}
       </div>
 
