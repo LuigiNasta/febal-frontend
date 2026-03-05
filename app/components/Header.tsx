@@ -30,7 +30,6 @@ export default function Header() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Funzione per gestire la ricerca
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (search.trim()) {
@@ -40,7 +39,6 @@ export default function Header() {
     }
   };
 
-  // Funzione per il bottone ricerca
   const handleSearchClick = () => {
     if (search.trim()) {
       router.push(`/search?q=${encodeURIComponent(search)}`);
@@ -86,7 +84,7 @@ export default function Header() {
               onChange={(e) => setSearch(e.target.value)}
               className="w-full px-4 py-2 rounded-full bg-white/20 text-white placeholder-white/70 backdrop-blur-sm focus:bg-white/90 focus:text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-600 transition"
             />
-            <button 
+            <button
               type="submit"
               className="absolute right-1 top-1/2 transform -translate-y-1/2 px-3 py-1 text-white hover:text-red-600 transition"
             >
@@ -97,7 +95,6 @@ export default function Header() {
 
         {/* Mobile buttons */}
         <div className="flex items-center space-x-4 lg:hidden">
-          {/* Mostra/Nascondi SearchBar */}
           <button
             className="text-white text-xl font-bold focus:outline-none"
             onClick={() => setShowSearch(!showSearch)}
@@ -124,7 +121,7 @@ export default function Header() {
               onChange={(e) => setSearch(e.target.value)}
               className="w-full px-4 py-2 rounded-full bg-white/20 text-white placeholder-white/70 backdrop-blur-sm focus:bg-white/90 focus:text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-600 transition"
             />
-            <button 
+            <button
               type="submit"
               className="absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1 text-white hover:text-red-600 transition"
             >
@@ -134,26 +131,112 @@ export default function Header() {
         </div>
       )}
 
-      {/* Mobile menu */}
+      {/* Mobile menu — fullscreen overlay */}
       {open && (
-        <nav className="lg:hidden bg-black/70 backdrop-blur-sm">
-          <div className="flex flex-col p-4 space-y-2">
-            {menuItems.map((item) => (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.96)",
+            backdropFilter: "blur(12px)",
+            zIndex: 100,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {/* Close button */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 24px" }}>
+            <Link href="/" onClick={() => setOpen(false)} style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+              <Image src="/logo.jpg" alt="F.lli Gaeta" width={36} height={36} className="rounded-full" />
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: "1.1rem" }}>F.lli Gaeta</span>
+            </Link>
+            <button
+              onClick={() => setOpen(false)}
+              style={{ background: "none", border: "none", color: "#fff", fontSize: "1.8rem", cursor: "pointer", lineHeight: 1, padding: "4px 8px" }}
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "0 24px" }} />
+
+          {/* Nav items */}
+          <nav style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 24px", gap: "0" }}>
+            {menuItems.map((item, i) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`transition ${
-                  item.name === "Offerte"
-                    ? "text-yellow-400 hover:text-yellow-300 font-semibold"
-                    : "text-white hover:text-red-600 hover:underline"
-                }`}
                 onClick={() => setOpen(false)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "20px 8px",
+                  borderBottom: "1px solid rgba(255,255,255,0.07)",
+                  textDecoration: "none",
+                  color: item.name === "Offerte" ? "#facc15" : "#fff",
+                  fontSize: "clamp(1.4rem, 6vw, 1.9rem)",
+                  fontWeight: 700,
+                  fontFamily: "'Georgia', serif",
+                  letterSpacing: "0.01em",
+                  animation: `slideInMenu 0.45s cubic-bezier(0.22,1,0.36,1) both`,
+                  animationDelay: `${i * 55}ms`,
+                  WebkitTapHighlightColor: "transparent",
+                  transition: "padding-left 0.15s ease, color 0.15s ease, background 0.15s ease",
+                  borderRadius: "4px",
+                }}
+                onTouchStart={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.background = "rgba(220,38,38,0.15)";
+                  el.style.paddingLeft = "20px";
+                  el.style.color = "#dc2626";
+                }}
+                onTouchEnd={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  setTimeout(() => {
+                    if (el) {
+                      el.style.background = "";
+                      el.style.paddingLeft = "8px";
+                      el.style.color = item.name === "Offerte" ? "#facc15" : "#fff";
+                    }
+                  }, 200);
+                }}
               >
-                {item.name}
+                <span>{item.name}</span>
+                <svg
+                  width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  style={{ opacity: 0.3, flexShrink: 0 }}
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
               </Link>
             ))}
+          </nav>
+
+          {/* Footer contatti */}
+          <div style={{ padding: "20px 32px 44px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+            <p style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "10px" }}>
+              Contatti rapidi
+            </p>
+            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+              <a href="tel:081948905" style={{ display: "flex", alignItems: "center", gap: "8px", color: "rgba(255,255,255,0.7)", fontSize: "0.95rem", fontWeight: 600, textDecoration: "none" }}>
+                <span style={{ fontSize: "1rem" }}>📞</span> 081 948905
+              </a>
+              <a href="tel:+393333038342" style={{ display: "flex", alignItems: "center", gap: "8px", color: "rgba(255,255,255,0.7)", fontSize: "0.95rem", fontWeight: 600, textDecoration: "none" }}>
+                <span style={{ fontSize: "1rem" }}>📱</span> +39 333 303 8342
+              </a>
+            </div>
           </div>
-        </nav>
+
+          <style>{`
+            @keyframes slideInMenu {
+              from { opacity: 0; transform: translateX(-28px); }
+              to   { opacity: 1; transform: translateX(0); }
+            }
+          `}</style>
+        </div>
       )}
     </header>
   );
