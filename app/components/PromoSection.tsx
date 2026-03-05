@@ -1,6 +1,6 @@
 "use client";
 // components/PromoSection.tsx
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const promoCards = [
   { image: "/off1.PNG", alt: "Il momento giusto per i tuoi nuovi spazi è ora" },
@@ -9,8 +9,58 @@ const promoCards = [
   { image: "/off4.PNG", alt: "Top in gres in regalo" },
 ];
 
+// Directions: left, right, left, right (alternating from sides)
+const slideFrom = ["left", "right", "left", "right"];
+
+function PromoCard({ card, index }: { card: { image: string; alt: string }; index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const from = slideFrom[index];
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        borderRadius: "4px",
+        overflow: "hidden",
+        aspectRatio: "1 / 1",
+        transform: visible ? "translateX(0) scale(1)" : `translateX(${from === "left" ? "-60px" : "60px"}) scale(0.96)`,
+        opacity: visible ? 1 : 0,
+        transition: `transform 0.65s cubic-bezier(0.22,1,0.36,1) ${index * 100}ms, opacity 0.65s ease ${index * 100}ms`,
+      }}
+    >
+      <img
+        src={card.image}
+        alt={card.alt}
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.4s ease" }}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.04)")}
+        onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1)")}
+      />
+    </div>
+  );
+}
+
 export default function PromoSection() {
   const [showModal, setShowModal] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const copyEmail = () => {
+    navigator.clipboard.writeText("flligaeta@libero.it").then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   return (
     <section id="promo-primavera" className="bg-white py-16 md:py-24 px-4">
@@ -32,15 +82,7 @@ export default function PromoSection() {
         {/* 4 images grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px" }} className="md:grid-cols-4">
           {promoCards.map((card, i) => (
-            <div key={i} style={{ borderRadius: "4px", overflow: "hidden", aspectRatio: "1 / 1" }}>
-              <img
-                src={card.image}
-                alt={card.alt}
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.4s ease" }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.03)")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1)")}
-              />
-            </div>
+            <PromoCard key={i} card={card} index={i} />
           ))}
         </div>
 
@@ -157,23 +199,34 @@ export default function PromoSection() {
             </div>
 
             {/* Email */}
-            <a
-              href="mailto:flligaeta@libero.it?subject=Consulenza%20gratuita%20-%20Promo%20Primavera%202026&body=Buongiorno%2C%20vorrei%20prenotare%20una%20consulenza%20gratuita%20per%20la%20Promozione%20Primavera%202026."
-              style={{ display: "flex", alignItems: "center", gap: "14px", padding: "16px 18px", background: "#fff5f5", border: "1px solid #fecaca", borderRadius: "4px", marginBottom: "12px", textDecoration: "none", transition: "background 0.2s" }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "#fee2e2")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "#fff5f5")}
-            >
-              <div style={{ width: "40px", height: "40px", background: "#dc2626", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
+            <div style={{ padding: "16px 18px", background: "#fff5f5", border: "1px solid #fecaca", borderRadius: "4px", marginBottom: "12px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "12px" }}>
+                <div style={{ width: "40px", height: "40px", background: "#dc2626", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                </div>
+                <div>
+                  <p style={{ fontSize: "0.72rem", fontWeight: 600, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "2px" }}>Scrivici una mail</p>
+                  <p style={{ fontSize: "0.95rem", fontWeight: 700, color: "#1a1a1a" }}>flligaeta@libero.it</p>
+                </div>
               </div>
-              <div>
-                <p style={{ fontSize: "0.72rem", fontWeight: 600, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "2px" }}>Scrivici una mail</p>
-                <p style={{ fontSize: "0.95rem", fontWeight: 600, color: "#1a1a1a" }}>flligaeta@libero.it</p>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <a
+                  href="mailto:flligaeta@libero.it?subject=Consulenza%20gratuita%20-%20Promo%20Primavera%202026&body=Buongiorno%2C%20vorrei%20prenotare%20una%20consulenza%20gratuita%20per%20la%20Promozione%20Primavera%202026."
+                  style={{ flex: 1, display: "block", textAlign: "center", padding: "9px 12px", background: "#dc2626", color: "#fff", fontWeight: 600, fontSize: "0.8rem", borderRadius: "3px", textDecoration: "none", letterSpacing: "0.05em" }}
+                >
+                  Apri client mail
+                </a>
+                <button
+                  onClick={copyEmail}
+                  style={{ flex: 1, padding: "9px 12px", background: copied ? "#16a34a" : "#1a1a1a", color: "#fff", fontWeight: 600, fontSize: "0.8rem", borderRadius: "3px", border: "none", cursor: "pointer", letterSpacing: "0.05em", transition: "background 0.2s" }}
+                >
+                  {copied ? "✓ Copiato!" : "Copia indirizzo"}
+                </button>
               </div>
-            </a>
+            </div>
 
             {/* Divider */}
             <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "18px 0" }}>
@@ -220,7 +273,7 @@ export default function PromoSection() {
             </a>
 
             <p style={{ marginTop: "20px", fontSize: "0.78rem", color: "#aaa", textAlign: "center", lineHeight: 1.5 }}>
-              Vieni a trovarci in negozio oppure contattaci per fissare un appuntamento con i nostri esperti.
+              Vieni a trovarci in negozio oppure contattaci per fissare un appuntamento.
             </p>
           </div>
         </div>

@@ -132,6 +132,7 @@ export default function Hero() {
           src={slide.image}
           alt="Hero"
           className="w-full h-full object-cover"
+          style={{ objectPosition: slide.promoLabel ? "top center" : "center center" }}
         />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
@@ -216,11 +217,11 @@ export default function Hero() {
         )}
       </div>
 
-      {/* Navigation arrows */}
+      {/* Navigation arrows — solo desktop */}
       <button
         onClick={prev}
         aria-label="Slide precedente"
-        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center transition-all duration-200"
+        className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 z-20 items-center justify-center transition-all duration-200"
         style={{
           width: "48px",
           height: "48px",
@@ -231,14 +232,8 @@ export default function Hero() {
           color: "#fff",
           cursor: "pointer",
         }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background =
-            "rgba(255,255,255,0.25)";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.background =
-            "rgba(255,255,255,0.12)";
-        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.25)"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.12)"; }}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
@@ -248,7 +243,7 @@ export default function Hero() {
       <button
         onClick={next}
         aria-label="Slide successiva"
-        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center transition-all duration-200"
+        className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 z-20 items-center justify-center transition-all duration-200"
         style={{
           width: "48px",
           height: "48px",
@@ -259,14 +254,8 @@ export default function Hero() {
           color: "#fff",
           cursor: "pointer",
         }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background =
-            "rgba(255,255,255,0.25)";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.background =
-            "rgba(255,255,255,0.12)";
-        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.25)"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.12)"; }}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="9 18 15 12 9 6" />
