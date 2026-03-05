@@ -122,11 +122,22 @@ export default function Hero() {
   const slide = slides[current];
 
   return (
-    <section className="relative w-full h-screen overflow-hidden">
+    <section
+      className="relative w-full overflow-hidden"
+      style={{ height: slide.promoLabel ? "auto" : "100vh" }}
+    >
       {/* Background image */}
       <div
-        className="absolute inset-0 transition-opacity duration-500"
-        style={{ opacity: animating ? 0 : 1 }}
+        className="transition-opacity duration-500"
+        style={{
+          opacity: animating ? 0 : 1,
+          position: slide.promoLabel ? "relative" : "absolute",
+          inset: slide.promoLabel ? undefined : 0,
+          width: "100%",
+          aspectRatio: slide.promoLabel ? "1 / 1" : undefined,
+          height: slide.promoLabel ? undefined : "100%",
+          background: slide.promoLabel ? "#111" : "transparent",
+        }}
       >
         <img
           src={slide.image}
@@ -134,30 +145,28 @@ export default function Hero() {
           style={{
             width: "100%",
             height: "100%",
-            objectFit: "cover",
-            objectPosition: slide.promoLabel ? "50% 20%" : "center center",
+            objectFit: slide.promoLabel ? "contain" : "cover",
+            objectPosition: "center center",
             display: "block",
           }}
         />
-        {/* Gradient overlay — solo slide 1 */}
         {!slide.promoLabel && (
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
         )}
-        {/* Slide 2: gradient leggero solo in basso per il bottone */}
         {slide.promoLabel && (
-          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7) 100%)" }} />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 70%, rgba(0,0,0,0.6) 100%)" }} />
         )}
       </div>
 
       {/* Content */}
       <div
-        className="absolute inset-0 z-10"
         style={{
           opacity: animating ? 0 : 1,
-          transform: animating
-            ? `translateX(${direction === "right" ? "-40px" : "40px"})`
-            : "translateX(0)",
+          transform: animating ? `translateX(${direction === "right" ? "-40px" : "40px"})` : "translateX(0)",
           transition: "opacity 0.5s ease, transform 0.5s ease",
+          position: slide.promoLabel ? "relative" : "absolute",
+          inset: slide.promoLabel ? undefined : 0,
+          zIndex: 10,
         }}
       >
         {/* Slide 1 — centered layout */}
@@ -166,22 +175,12 @@ export default function Hero() {
             <div className="text-center max-w-3xl mx-auto">
               <h1
                 className="text-white font-bold mb-4 leading-tight"
-                style={{
-                  fontSize: "clamp(2rem, 5vw, 3.5rem)",
-                  textShadow: "0 2px 20px rgba(0,0,0,0.4)",
-                  fontFamily: "'Georgia', serif",
-                }}
+                style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", textShadow: "0 2px 20px rgba(0,0,0,0.4)", fontFamily: "'Georgia', serif" }}
               >
                 {slide.title}
               </h1>
               {slide.subtitle && (
-                <p
-                  className="text-white/90 mb-8"
-                  style={{
-                    fontSize: "clamp(1rem, 2vw, 1.25rem)",
-                    textShadow: "0 1px 8px rgba(0,0,0,0.3)",
-                  }}
-                >
+                <p className="text-white/90 mb-8" style={{ fontSize: "clamp(1rem, 2vw, 1.25rem)", textShadow: "0 1px 8px rgba(0,0,0,0.3)" }}>
                   {slide.subtitle}
                 </p>
               )}
@@ -190,26 +189,38 @@ export default function Hero() {
           </div>
         )}
 
-        {/* Slide 2 — etichetta solo su desktop (mobile: l'immagine parla da sola) */}
+        {/* Slide 2 — bottone sotto l'immagine su mobile, overlay su desktop */}
         {slide.promoLabel && (
-          <div className="hidden md:flex absolute bottom-20 left-16 flex-col items-start gap-4">
-            <div style={{ borderLeft: "3px solid #dc2626", paddingLeft: "14px" }}>
-              <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "4px" }}>
-                F.lli Gaeta
-              </p>
-              <p style={{ color: "#fff", fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", fontWeight: 700, fontFamily: "'Georgia', serif", letterSpacing: "0.02em", textShadow: "0 2px 12px rgba(0,0,0,0.5)", lineHeight: 1.2 }}>
-                {slide.promoLabel}
-              </p>
+          <>
+            {/* Desktop: etichetta + bottone sovrapposti in basso a sinistra */}
+            <div className="hidden md:flex absolute bottom-20 left-16 flex-col items-start gap-4" style={{ position: "absolute" }}>
+              <div style={{ borderLeft: "3px solid #dc2626", paddingLeft: "14px" }}>
+                <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "4px" }}>F.lli Gaeta</p>
+                <p style={{ color: "#fff", fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", fontWeight: 700, fontFamily: "'Georgia', serif", textShadow: "0 2px 12px rgba(0,0,0,0.5)", lineHeight: 1.2 }}>{slide.promoLabel}</p>
+              </div>
+              <CtaButton cta={slide.cta} style={{ fontSize: "0.9rem", padding: "12px 28px" }} />
             </div>
-            <CtaButton cta={slide.cta} style={{ fontSize: "0.9rem", padding: "12px 28px" }} />
-          </div>
-        )}
 
-        {/* Slide 2 — bottone su mobile in basso centrato */}
-        {slide.promoLabel && (
-          <div className="md:hidden absolute bottom-20 left-0 right-0 flex justify-center">
-            <CtaButton cta={slide.cta} style={{ fontSize: "0.85rem", padding: "12px 28px" }} />
-          </div>
+            {/* Mobile: bottone centrato sotto l'immagine */}
+            <div
+              className="md:hidden flex flex-col items-center gap-3 py-5"
+              style={{ background: "#111" }}
+            >
+              <CtaButton cta={slide.cta} style={{ fontSize: "0.9rem", padding: "13px 32px" }} />
+              {/* Dots mobile dentro questo blocco */}
+              <div className="flex gap-3 items-center pt-1">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => goTo(i, i > current ? "right" : "left")}
+                    aria-label={`Vai alla slide ${i + 1}`}
+                    style={{ width: i === current ? "32px" : "10px", height: "10px", borderRadius: "5px", background: i === current ? "#fff" : "rgba(255,255,255,0.4)", border: "none", cursor: "pointer", transition: "all 0.3s ease", padding: 0 }}
+                  />
+                ))}
+              </div>
+              <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.62rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>scorri per vedere di più</p>
+            </div>
+          </>
         )}
       </div>
 
@@ -258,8 +269,8 @@ export default function Hero() {
         </svg>
       </button>
 
-      {/* Dots indicator + swipe hint */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">
+      {/* Dots indicator + swipe hint — desktop always, mobile solo slide 1 */}
+      <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 ${slide.promoLabel ? "hidden md:flex" : "flex"}`}>
         <div className="flex gap-3 items-center">
           {slides.map((_, i) => (
             <button
