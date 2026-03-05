@@ -126,16 +126,23 @@ export default function Hero() {
       {/* Background image */}
       <div
         className="absolute inset-0 transition-opacity duration-500"
-        style={{ opacity: animating ? 0 : 1 }}
+        style={{ opacity: animating ? 0 : 1, background: slide.promoLabel ? "#1a1a1a" : "transparent" }}
       >
         <img
           src={slide.image}
           alt="Hero"
-          className="w-full h-full object-cover"
-          style={{ objectPosition: slide.promoLabel ? "top center" : "center center" }}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: slide.promoLabel ? "contain" : "cover",
+            objectPosition: "center center",
+            display: "block",
+          }}
         />
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
+        {/* Gradient overlay — solo slide 1 */}
+        {!slide.promoLabel && (
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
+        )}
       </div>
 
       {/* Content */}
@@ -179,40 +186,25 @@ export default function Hero() {
           </div>
         )}
 
-        {/* Slide 2 — bottom-left promo label + red button */}
+        {/* Slide 2 — etichetta solo su desktop (mobile: l'immagine parla da sola) */}
         {slide.promoLabel && (
-          <div className="absolute bottom-20 left-8 md:left-16 flex flex-col items-start gap-4">
-            <div style={{
-              borderLeft: "3px solid #dc2626",
-              paddingLeft: "14px",
-            }}>
-              <p
-                style={{
-                  color: "rgba(255,255,255,0.75)",
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  marginBottom: "4px",
-                }}
-              >
+          <div className="hidden md:flex absolute bottom-20 left-16 flex-col items-start gap-4">
+            <div style={{ borderLeft: "3px solid #dc2626", paddingLeft: "14px" }}>
+              <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "4px" }}>
                 F.lli Gaeta
               </p>
-              <p
-                style={{
-                  color: "#fff",
-                  fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)",
-                  fontWeight: 700,
-                  fontFamily: "'Georgia', serif",
-                  letterSpacing: "0.02em",
-                  textShadow: "0 2px 12px rgba(0,0,0,0.5)",
-                  lineHeight: 1.2,
-                }}
-              >
+              <p style={{ color: "#fff", fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", fontWeight: 700, fontFamily: "'Georgia', serif", letterSpacing: "0.02em", textShadow: "0 2px 12px rgba(0,0,0,0.5)", lineHeight: 1.2 }}>
                 {slide.promoLabel}
               </p>
             </div>
             <CtaButton cta={slide.cta} style={{ fontSize: "0.9rem", padding: "12px 28px" }} />
+          </div>
+        )}
+
+        {/* Slide 2 — bottone su mobile in basso centrato */}
+        {slide.promoLabel && (
+          <div className="md:hidden absolute bottom-20 left-0 right-0 flex justify-center">
+            <CtaButton cta={slide.cta} style={{ fontSize: "0.85rem", padding: "12px 28px" }} />
           </div>
         )}
       </div>
@@ -262,25 +254,39 @@ export default function Hero() {
         </svg>
       </button>
 
-      {/* Dots indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3 items-center">
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i, i > current ? "right" : "left")}
-            aria-label={`Vai alla slide ${i + 1}`}
-            style={{
-              width: i === current ? "28px" : "8px",
-              height: "8px",
-              borderRadius: "4px",
-              background: i === current ? "#fff" : "rgba(255,255,255,0.45)",
-              border: "none",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              padding: 0,
-            }}
-          />
-        ))}
+      {/* Dots indicator + swipe hint */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">
+        <div className="flex gap-3 items-center">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i, i > current ? "right" : "left")}
+              aria-label={`Vai alla slide ${i + 1}`}
+              style={{
+                width: i === current ? "32px" : "10px",
+                height: "10px",
+                borderRadius: "5px",
+                background: i === current ? "#fff" : "rgba(255,255,255,0.5)",
+                border: "none",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                padding: 0,
+              }}
+            />
+          ))}
+        </div>
+        <p
+          className="md:hidden"
+          style={{
+            color: "rgba(255,255,255,0.6)",
+            fontSize: "0.65rem",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            fontWeight: 500,
+          }}
+        >
+          scorri per vedere di più
+        </p>
       </div>
 
       {/* Progress bar */}
