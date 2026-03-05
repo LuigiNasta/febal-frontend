@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <section className="relative w-full h-screen">
+      <section className="relative w-full">
         <Hero />
       </section>
 

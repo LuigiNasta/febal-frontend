@@ -86,7 +86,7 @@ export default function Hero() {
           position: relative;
           width: 100%;
           /* 56.25% = altezza di un'immagine 16:9 larga 100% */
-          padding-top: 56.25%;
+          padding-top: 150%;
           overflow: hidden;
           flex-shrink: 0;
         }
