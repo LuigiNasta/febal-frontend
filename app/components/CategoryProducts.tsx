@@ -25,7 +25,7 @@ interface Product {
   nome: string;
   descrizione?: RichTextNode[];
   immagini?: Image[];
-  categorie: Category[];
+  categoria: Category | null;
   collezione?: Collezione | null;
 }
 
@@ -38,8 +38,11 @@ export default function Products({ categoryId }: ProductsProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/prodotti?populate=*`, {
-    })
+      const url = categoryId !== null
+        ? `${process.env.NEXT_PUBLIC_API_URL}/prodotti?populate=*&filters[categoria][id][$eq]=${categoryId}&pagination[pageSize]=100`
+        : `${process.env.NEXT_PUBLIC_API_URL}/prodotti?populate=*&pagination[pageSize]=100`;
+
+      fetch(url)
       .then(res => res.json())
       .then(data => {
         if (!data?.data) {
@@ -53,17 +56,9 @@ export default function Products({ categoryId }: ProductsProps) {
           nome: p.nome || "Nome non disponibile",
           descrizione: p.descrizione || [],
           immagini: p.immagini || [],
-          categorie: p.categorie || [],
+          categoria: p.categoria || null,
           collezione: p.collezione || null,
         }));
-
-        // Filtro per categoryId se specificato
-        if (categoryId !== null) {
-          prods = prods.filter((prod: Product) =>
-            Array.isArray(prod.categorie) &&
-            prod.categorie.some((cat: Category) => cat.id === categoryId)
-          );
-        }
 
         setProducts(prods);
       })
@@ -149,11 +144,7 @@ export default function Products({ categoryId }: ProductsProps) {
                 <div className="mb-4">
                   <p className="text-gray-600 font-semibold">Categoria:</p>
                   <p className="text-gray-800">
-                    {selectedProduct.categorie?.length
-                      ? selectedProduct.categorie
-                          .map((cat: Category) => cat.nome || "Senza nome")
-                          .join(", ")
-                      : "N/A"}
+                  {selectedProduct.categoria?.nome || "N/A"}
                   </p>
                 </div>
 
