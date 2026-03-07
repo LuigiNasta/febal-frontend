@@ -20,7 +20,7 @@ export default function Categories({ onSelectCategory }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/categorie?populate=*`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/categorie?populate=*&sort=ordine:asc`, {
     })
       .then(res => res.json())
       .then(data => {

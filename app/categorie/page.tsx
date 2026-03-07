@@ -18,7 +18,7 @@ function CategorieContent() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/categorie?populate=*`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/categorie?populate=*&sort=ordine:asc`, {
     })
       .then(res => res.json())
       .then(data => {
@@ -41,6 +41,9 @@ function CategorieContent() {
 
   const handleCategorySelect = (category: any) => {
     setSelectedCategory(category);
+    setTimeout(() => {
+      document.getElementById("prodotti-sezione")?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
   };
 
   return (
@@ -52,13 +55,17 @@ function CategorieContent() {
 
       <Categories onSelectCategory={handleCategorySelect} />
 
-      {selectedCategory && (
-        <h2 className="text-2xl font-semibold text-center mt-12 mb-6">
+     {selectedCategory && (
+      <>
+        <h2
+          id="prodotti-sezione"
+          className="text-2xl font-semibold text-center mt-12 mb-6"
+        >
           Categoria: {selectedCategory.nome}
         </h2>
-      )}
-
-      <Products categoryId={selectedCategory?.id ?? null} />
+        <Products categoryId={selectedCategory.id} />
+      </>
+    )}
     </main>
   );
 }
