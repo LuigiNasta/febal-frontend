@@ -159,7 +159,7 @@ export default function Products({ categoryId, isOfferte = false, searchQuery = 
         console.error("❌ Errore fetch prodotti:", err);
         setLoading(false);
       });
-  }, [categoryId, isOfferte]);
+  }, [categoryId, isOfferte, searchQuery]);
 
   if (loading) {
     return (
