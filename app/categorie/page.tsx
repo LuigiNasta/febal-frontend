@@ -40,6 +40,7 @@ function CategorieContent() {
   }, [searchParams, categories]);
 
   const handleCategorySelect = (category: any) => {
+     console.log("Categoria selezionata:", category);
     setSelectedCategory(category);
     setTimeout(() => {
       document.getElementById("prodotti-sezione")?.scrollIntoView({ behavior: "smooth" });
