@@ -8,7 +8,7 @@ export default function Collections() {
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/collezioni?populate=*`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/collezioni?populate=*&pagination[pageSize]=100`, {
     })
       .then(res => res.json())
       .then(data => {

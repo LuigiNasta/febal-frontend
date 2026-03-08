@@ -41,9 +41,10 @@ interface Product {
 interface ProductsProps {
   categoryId: number | null;
   isOfferte?: boolean;
+  searchQuery?: string;
 }
 
-export default function Products({ categoryId, isOfferte = false }: ProductsProps) {
+export default function Products({ categoryId, isOfferte = false, searchQuery = "" }: ProductsProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -145,7 +146,12 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
         else if (categoryId !== null) {
           prods = prods.filter(prod => prod.categoria?.id === categoryId);
         }
-
+        // Filtro per ricerca testuale
+        if (searchQuery.trim()) {
+          prods = prods.filter(prod =>
+            prod.nome.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        }
         setProducts(prods);
         setLoading(false);
       })

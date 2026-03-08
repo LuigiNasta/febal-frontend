@@ -102,7 +102,7 @@ function SearchContent() {
   };
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/prodotti?populate=*`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/prodotti?populate=*&pagination[pageSize]=100`, {
     })
       .then(res => res.json())
       .then(data => {

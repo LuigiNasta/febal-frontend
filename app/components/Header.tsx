@@ -2,12 +2,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Header() {
   const router = useRouter();
-  const [open, setOpen] = useState(false); // menu mobile
-  const [showSearch, setShowSearch] = useState(false); // search bar mobile
+  const pathname = usePathname();
+  const isProdottiPage = pathname === "/prodotti";
+
+  const [open, setOpen] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const [search, setSearch] = useState("");
 
   const menuItems = [
@@ -75,32 +78,37 @@ export default function Header() {
             </Link>
           ))}
 
-          {/* Desktop SearchBar */}
-          <form onSubmit={handleSearch} className="ml-6 relative flex items-center w-64">
-            <input
-              type="text"
-              placeholder="Cerca prodotti..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-4 py-2 rounded-full bg-white/20 text-white placeholder-white/70 backdrop-blur-sm focus:bg-white/90 focus:text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-600 transition"
-            />
-            <button
-              type="submit"
-              className="absolute right-1 top-1/2 transform -translate-y-1/2 px-3 py-1 text-white hover:text-red-600 transition"
-            >
-              🔍
-            </button>
-          </form>
+          {/* Desktop SearchBar — nascosta su /prodotti */}
+          {!isProdottiPage && (
+            <form onSubmit={handleSearch} className="ml-6 relative flex items-center w-64">
+              <input
+                type="text"
+                placeholder="Cerca prodotti..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full px-4 py-2 rounded-full bg-white/20 text-white placeholder-white/70 backdrop-blur-sm focus:bg-white/90 focus:text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-600 transition"
+              />
+              <button
+                type="submit"
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 px-3 py-1 text-white hover:text-red-600 transition"
+              >
+                🔍
+              </button>
+            </form>
+          )}
         </nav>
 
         {/* Mobile buttons */}
         <div className="flex items-center space-x-4 lg:hidden">
-          <button
-            className="text-white text-xl font-bold focus:outline-none"
-            onClick={() => setShowSearch(!showSearch)}
-          >
-            🔍
-          </button>
+          {/* Icona ricerca — nascosta su /prodotti */}
+          {!isProdottiPage && (
+            <button
+              className="text-white text-xl font-bold focus:outline-none"
+              onClick={() => setShowSearch(!showSearch)}
+            >
+              🔍
+            </button>
+          )}
           <div
             className="text-white text-2xl cursor-pointer"
             onClick={() => setOpen(!open)}
@@ -110,8 +118,8 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile SearchBar */}
-      {showSearch && (
+      {/* Mobile SearchBar — nascosta su /prodotti */}
+      {showSearch && !isProdottiPage && (
         <div className="lg:hidden bg-black/70 backdrop-blur-sm p-4">
           <form onSubmit={handleSearch} className="relative flex items-center w-full">
             <input
@@ -144,7 +152,7 @@ export default function Header() {
             flexDirection: "column",
           }}
         >
-          {/* Close button */}
+          {/* Header overlay */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 24px" }}>
             <Link href="/" onClick={() => setOpen(false)} style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
               <Image src="/logo.jpg" alt="F.lli Gaeta" width={36} height={36} className="rounded-full" />
