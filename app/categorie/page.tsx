@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Categories from "../components/Categories";
-import Products from "../components/Products";
+import Products from "../components/CategoryProducts";
 
 interface Category {
   id: number;
@@ -40,7 +40,6 @@ function CategorieContent() {
   }, [searchParams, categories]);
 
   const handleCategorySelect = (category: any) => {
-     console.log("Categoria selezionata:", category);
     setSelectedCategory(category);
     setTimeout(() => {
       document.getElementById("prodotti-sezione")?.scrollIntoView({ behavior: "smooth" });
