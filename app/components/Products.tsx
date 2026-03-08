@@ -117,7 +117,7 @@ export default function Products({ categoryId, isOfferte = false }: ProductsProp
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/prodotti?populate=*`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/prodotti?populate=*&pagination[pageSize]=100`, {
     })
       .then(res => res.json())
       .then(data => {
