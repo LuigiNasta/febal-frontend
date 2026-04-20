@@ -6,6 +6,10 @@ export const metadata = {
   description:
     "Vendita e montaggio arredamenti su misura. Siamo rivenditori ufficiali Febal Casa. Progettazione, consulenza e installazione arredamenti per la tua casa.",
     applicationName: "F.lli Gaeta",
+      // Aggiungi questo:
+    openGraph: {
+      siteName: "F.lli Gaeta",
+    },
     verification: {
     google: "Khef-5-VkzmO4BMvbSOejIU9z9LHwskan8lFB2tflAw",
   },
