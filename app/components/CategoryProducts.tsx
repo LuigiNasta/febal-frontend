@@ -1,36 +1,22 @@
 "use client";
 import { useEffect, useState } from "react";
+import { fetchProducts } from "../services/api";
 
 interface Image {
   url: string;
 }
 
-interface Category {
-  id: number;
-  nome?: string;
-}
-
-interface Collezione {
-  id: number;
-  nome?: string;
-}
-
-interface RichTextNode {
-  type: string;
-  children: { text: string }[];
-}
-
 interface Product {
-  id: number;
+  id: string;
   nome: string;
-  descrizione?: RichTextNode[];
+  descrizione?: string;
   immagini?: Image[];
-  categoria: Category | null;
-  collezione?: Collezione | null;
+  categoria: string | null;
+  collezione?: string | null;
 }
 
 interface ProductsProps {
-  categoryId: number | null;
+  categoryId: string | null;
 }
 
 export default function Products({ categoryId }: ProductsProps) {
@@ -38,27 +24,20 @@ export default function Products({ categoryId }: ProductsProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
-      const url = categoryId !== null
-        ? `${process.env.NEXT_PUBLIC_API_URL}/prodotti?populate=*&filters[categoria][id][$eq]=${categoryId}&pagination[pageSize]=100`
-        : `${process.env.NEXT_PUBLIC_API_URL}/prodotti?populate=*&pagination[pageSize]=100`;
-
-      fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        if (!data?.data) {
-          setProducts([]);
-          return;
-        }
-
-        // Mapping con tipizzazione esplicita
-        let prods: Product[] = data.data.map((p: any) => ({
+    fetchProducts()
+      .then((data) => {
+        let prods: Product[] = data.map((p: any) => ({
           id: p.id,
           nome: p.nome || "Nome non disponibile",
-          descrizione: p.descrizione || [],
+          descrizione: p.descrizione || "",
           immagini: p.immagini || [],
           categoria: p.categoria || null,
           collezione: p.collezione || null,
         }));
+
+        if (categoryId !== null) {
+          prods = prods.filter((p) => p.categoria === categoryId);
+        }
 
         setProducts(prods);
       })
@@ -79,14 +58,7 @@ export default function Products({ categoryId }: ProductsProps) {
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map((prod: Product) => {
             const imageUrl = prod.immagini?.[0]?.url || "/placeholder.png";
-
-            // Tipizzazione esplicita per d e c
-            const descriptionText =
-              prod.descrizione
-                ?.map((d: RichTextNode) =>
-                  d.children.map((c: { text: string }) => c.text).join(" ")
-                )
-                .join(" ") || "";
+            const descriptionText = prod.descrizione || "";
 
             return (
               <div
@@ -144,25 +116,21 @@ export default function Products({ categoryId }: ProductsProps) {
                 <div className="mb-4">
                   <p className="text-gray-600 font-semibold">Categoria:</p>
                   <p className="text-gray-800">
-                  {selectedProduct.categoria?.nome || "N/A"}
+                  {selectedProduct.categoria || "N/A"}
                   </p>
                 </div>
 
                 <div className="mb-4">
                   <p className="text-gray-600 font-semibold">Collezione:</p>
                   <p className="text-gray-800">
-                    {selectedProduct.collezione?.nome || "N/A"}
+                    {selectedProduct.collezione || "N/A"}
                   </p>
                 </div>
 
                 <div className="mb-4">
                   <p className="text-gray-600 font-semibold">Descrizione:</p>
                   <p className="text-gray-800">
-                    {selectedProduct.descrizione
-                      ?.map((d: RichTextNode) =>
-                        d.children.map((c: { text: string }) => c.text).join(" ")
-                      )
-                      .join(" ") || "Nessuna descrizione"}
+                    {selectedProduct.descrizione || "Nessuna descrizione"}
                   </p>
                 </div>
               </div>

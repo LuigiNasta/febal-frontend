@@ -7,37 +7,21 @@ import Categories from "../components/Categories";
 import Products from "../components/CategoryProducts";
 
 interface Category {
-  id: number;
+  id: string;
   nome: string;
   immagine?: any;
 }
 
 function CategorieContent() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/categorie?populate=*&sort=ordine:asc`, {
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data?.data) {
-          setCategories(data.data);
-        }
-      })
-      .catch(err => console.error(err));
-  }, []);
-
-  useEffect(() => {
     const categoryId = searchParams.get("categoryId");
-    if (categoryId && categories.length > 0) {
-      const found = categories.find(cat => cat.id === parseInt(categoryId));
-      if (found) {
-        setSelectedCategory(found);
-      }
+    if (categoryId) {
+      setSelectedCategory({ id: categoryId, nome: categoryId });
     }
-  }, [searchParams, categories]);
+  }, [searchParams]);
 
   const handleCategorySelect = (category: any) => {
     setSelectedCategory(category);

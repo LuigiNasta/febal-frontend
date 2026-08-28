@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { fetchProducts } from "../services/api";
 
 export default function Collections() {
   const [collections, setCollections] = useState<any[]>([]);
@@ -8,13 +9,23 @@ export default function Collections() {
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/collezioni?populate=*&pagination[pageSize]=100`, {
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data?.data) {
-          setCollections(data.data);
-        }
+    fetchProducts()
+      .then((products) => {
+        const map = new Map<string, any>();
+        products.forEach((p: any) => {
+          if (!p.collezione) return;
+          if (!map.has(p.collezione)) {
+            map.set(p.collezione, {
+              id: p.collezione,
+              nome: p.collezione,
+              immagine_hero: p.immagini?.[0] || null,
+              descrizione: "",
+              prodotti: [],
+            });
+          }
+          map.get(p.collezione).prodotti.push(p);
+        });
+        setCollections(Array.from(map.values()));
         setLoading(false);
       })
       .catch(err => {
@@ -58,7 +69,7 @@ export default function Collections() {
             {collections.map(c => {
               const imageUrl = c.immagine_hero?.url || "/placeholder.png";
 
-              const description = c.descrizione?.[0]?.children?.[0]?.text || "";
+              const description = "";
 
               return (
                 <div
@@ -163,16 +174,7 @@ export default function Collections() {
                     </h2>
                   </div>
 
-                  {/* Descrizione */}
-                  {selectedCollection.descrizione && selectedCollection.descrizione.length > 0 && (
-                    <div>
-                      <p className="text-gray-700 text-lg leading-relaxed">
-                        {selectedCollection.descrizione
-                          .map((d: any) => d.children.map((c: any) => c.text).join(" "))
-                          .join("\n")}
-                      </p>
-                    </div>
-                  )}
+
 
                   {/* Numero di prodotti */}
                   {selectedCollection.prodotti && (

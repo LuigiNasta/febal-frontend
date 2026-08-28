@@ -2,26 +2,15 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
-
-interface TextChild {
-  text: string;
-  bold?: boolean;
-  italic?: boolean;
-  underline?: boolean;
-}
-
-interface RichTextNode {
-  type: string;
-  children: TextChild[];
-}
+import { fetchProducts } from "../services/api";
 
 interface Product {
-  id: number;
+  id: string;
   nome: string;
-  descrizione?: RichTextNode[];
+  descrizione?: string;
   immagini?: { url: string }[];
-  categoria?: { id: number; nome: string };
-  collezione?: { id: number; nome: string };
+  categoria?: string | null;
+  collezione?: string | null;
   in_evidenza?: boolean;
 }
 
@@ -35,80 +24,18 @@ function SearchContent() {
   const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Funzione per rendere il testo con formattazione
-  const renderDescription = (nodes: RichTextNode[]) => {
-    return nodes.map((node, idx) => {
-      if (node.type === 'paragraph') {
-        return (
-          <p key={idx} className="mb-3">
-            {node.children.map((child, i) => {
-              let element: any = child.text;
-              if (child.bold) element = <strong key={i}>{element}</strong>;
-              if (child.italic) element = <em key={i}>{element}</em>;
-              if (child.underline) element = <u key={i}>{element}</u>;
-              return element;
-            })}
-          </p>
-        );
-      }
-      if (node.type === 'heading-1') {
-        return (
-          <h3 key={idx} className="text-2xl font-bold mb-3 text-gray-900">
-            {node.children.map((c, i) => (
-              <span key={i}>{c.text}</span>
-            ))}
-          </h3>
-        );
-      }
-      if (node.type === 'heading-2') {
-        return (
-          <h4 key={idx} className="text-xl font-bold mb-2 text-gray-800">
-            {node.children.map((c, i) => (
-              <span key={i}>{c.text}</span>
-            ))}
-          </h4>
-        );
-      }
-      if (node.type === 'heading-3') {
-        return (
-          <h5 key={idx} className="text-lg font-bold mb-2 text-gray-800">
-            {node.children.map((c, i) => (
-              <span key={i}>{c.text}</span>
-            ))}
-          </h5>
-        );
-      }
-      if (node.type === 'list') {
-        return (
-          <ul key={idx} className="list-disc list-inside mb-3 space-y-1">
-            {node.children.map((item, i) => (
-              <li key={i} className="text-gray-700">
-                {item.text}
-              </li>
-            ))}
-          </ul>
-        );
-      }
-      return null;
-    });
-  };
+  // Descrizione salvata come testo semplice
+  const renderDescription = (text: string) =>
+    text.split("\n").filter(Boolean).map((line, idx) => (
+      <p key={idx} className="mb-3">{line}</p>
+    ));
 
-  // Funzione per estrarre testo semplice (per anteprima)
-  const getPlainText = (nodes: RichTextNode[]) => {
-    return nodes
-      .map(node => node.children.map(c => c.text).join(" "))
-      .join(" ")
-      .substring(0, 100);
-  };
+  const getPlainText = (text: string) => text.substring(0, 100);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/prodotti?populate=*&pagination[pageSize]=100`, {
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data?.data) {
-          setProducts(data.data);
-        }
+    fetchProducts()
+      .then((data) => {
+        setProducts(data as Product[]);
         setLoading(false);
       })
       .catch(err => {
@@ -122,11 +49,7 @@ function SearchContent() {
       const searchTerm = query.toLowerCase();
       const filtered = products.filter(p =>
         p.nome.toLowerCase().includes(searchTerm) ||
-        p.descrizione?.some(d =>
-          d.children?.some((c: any) =>
-            c.text.toLowerCase().includes(searchTerm)
-          )
-        )
+        (p.descrizione || "").toLowerCase().includes(searchTerm)
       );
       setFilteredProducts(filtered);
     } else {
@@ -238,7 +161,7 @@ function SearchContent() {
                       {selectedProduct.immagini.map((img, idx) => (
                         <img
                           key={idx}
-                          src={`${process.env.NEXT_PUBLIC_API_URL}${img.url}`}
+                          src={img.url}
                           alt={`${selectedProduct.nome} ${idx + 1}`}
                           className={`w-16 h-16 object-cover rounded cursor-pointer transition ${
                             idx === 0 ? 'border-2 border-blue-500' : 'border border-gray-300 hover:border-blue-500'
@@ -255,9 +178,9 @@ function SearchContent() {
                     <h2 className="text-4xl font-bold text-gray-900 mb-2">
                       {selectedProduct.nome}
                     </h2>
-                    {selectedProduct.collezione?.nome && (
+                    {selectedProduct.collezione && (
                       <p className="text-sm text-blue-600 font-semibold uppercase tracking-wide">
-                        {selectedProduct.collezione.nome}
+                        {selectedProduct.collezione}
                       </p>
                     )}
                   </div>
@@ -265,7 +188,7 @@ function SearchContent() {
                   <div className="border-l-4 border-blue-500 pl-4">
                     <p className="text-xs text-gray-500 uppercase tracking-widest">Categoria</p>
                     <p className="text-lg font-semibold text-gray-800">
-                      {selectedProduct.categoria?.nome || "N/A"}
+                      {selectedProduct.categoria || "N/A"}
                     </p>
                   </div>
 
