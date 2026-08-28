@@ -78,7 +78,7 @@ export default function CategoriePage() {
         <div className="text-center text-sm text-blue-600 mb-4">
           📊 categoryId passato a Products: {selectedCategory?.id ?? "null"} ({selectedCategory?.nome ?? "nessuna"})
         </div>
-        <Products categoryId={selectedCategory?.id ?? null} />
+        <Products categoryId={selectedCategory?.id?.toString() ?? null} />
       </div>
     </main>
   );
